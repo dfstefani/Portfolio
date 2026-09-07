@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXUS — Grafica 3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babylonjs/8.20.0/babylon.min.js" crossorigin="anonymous"></script>
+<style>
+  :root{
+    --bg:#000000;
+    --ink:#e9edf7;
+    --display:'Orbitron', sans-serif;
+    --body:'Rajdhani', sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:var(--body); overflow:hidden; height:100vh; position:relative;
+  }
+  
+  header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(6, 9, 19, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        nav {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 8rem 2rem 4rem 2rem;
+        }
+
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .app-title h1 {
+            font-size: clamp(1.8rem, 3vw, 2.5rem);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .app-title h1 span {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .app-title p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+        }
+
+  canvas#renderCanvas{
+    position:fixed; inset:0; width:100%; height:100%; z-index:2;
+    touch-action:none; outline:none;
+  }
+
+  /* Stile e animazione fluida della scritta BLOCCATO */
+  #core-label {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    z-index: 10;
+    font-family: var(--display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 4px;
+    color: var(--ink);
+    text-shadow: 0 0 10px rgba(47,224,255,0.8), 0 0 20px rgba(47,224,255,0.4);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  #core-label.visible {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  ::selection{ background:rgba(47,224,255,.4); }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+        <nav>
+            <a href="../portfolio/portfolio.html" class="logo" style="display: inline-flex; align-items: center; text-decoration: none;" title="Torna al portfolio">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 120" width="170" height="40" fill="none">
+                <defs>
+                  <linearGradient id="purple-grad-nav" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#6366f1" />
+                    <stop offset="50%" stop-color="#a855f7" />
+                    <stop offset="100%" stop-color="#ec4899" />
+                  </linearGradient>
+                  <linearGradient id="blob-grad-nav" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#00f5ff" />
+                    <stop offset="50%" stop-color="#a855f7" />
+                    <stop offset="100%" stop-color="#ec4899" />
+                  </linearGradient>
+                  <filter id="neon-glow-nav" x="-30%" y="-30%" width="160%" height="160%">
+                    <feGaussianBlur stdDeviation="4" result="blur" />
+                    <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+                  </filter>
+                  <clipPath id="nav-blob-clip">
+                    <path d="M 42,12 C 68,6 90,20 94,42 C 98,64 84,88 62,94 C 38,100 10,86 6,62 C 2,38 16,18 42,12 Z"/>
+                  </clipPath>
+                </defs>
+                <g transform="translate(10, 10)">
+                  <g clip-path="url(#nav-blob-clip)">
+                    <path d="M 42,12 C 68,6 90,20 94,42 C 98,64 84,88 62,94 C 38,100 10,86 6,62 C 2,38 16,18 42,12 Z" 
+                        fill="rgba(10, 12, 28, 0.85)" stroke="url(#blob-grad-nav)" stroke-width="5" filter="url(#neon-glow-nav)" />
+                    <path d="M 38,38 L 24,50 L 38,62" stroke="#00f5ff" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#neon-glow-nav)" />
+                    <path d="M 56,28 L 44,72" stroke="#a855f7" stroke-width="6.5" stroke-linecap="round" filter="url(#neon-glow-nav)" />
+                    <path d="M 62,38 L 76,50 L 62,62" stroke="#ec4899" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#neon-glow-nav)" />
+                  </g>
+                </g>
+                <text x="135" y="68" font-family="'Orbitron', sans-serif" font-size="52" font-weight="900" fill="url(#purple-grad-nav)" letter-spacing="2">SINTHEA</text>
+                <text x="140" y="94" font-family="'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="800" fill="#94a3b8" letter-spacing="6">DIGITAL STUDIO</text>
+              </svg>
+            </a>
+        </nav>
+    </header>
+
+<canvas id="renderCanvas"></canvas>
+<div id="core-label">BLOCCATO</div>
+<div id="response"></div>
+<div id="panels"></div>
+<div id="toasts"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  const PALETTE = {
+    blue: { core:[0.08,0.42,1.0], lattice:[0.05,0.5,1.0], glass:[0.04,0.32,0.85], torus:[0.15,0.9,4.0],
+            hud:[0.05,0.55,3.6], coreLight:[0.1,0.45,1.0], heatLight:[0.1,0.6,1.0],
+            fireC1:[0.2,0.6,1.0,0.9], fireC2:[0.05,0.35,0.9,0.65], fireDead:[0.03,0.12,0.35,0],
+            sparkC1:[0.3,0.7,1.0,0.9], sparkC2:[0.1,0.4,0.9,0.7], sparkDead:[0.03,0.12,0.35,0] }
+  };
+
+  function applyColors(babylon, pal){
+    if(!babylon) return;
+    babylon.coreMat.emissiveColor    = new BABYLON.Color3(pal.core[0], pal.core[1], pal.core[2]);
+    babylon.latticeMat.emissiveColor = new BABYLON.Color3(pal.lattice[0], pal.lattice[1], pal.lattice[2]);
+    babylon.glassMat.emissiveColor   = new BABYLON.Color3(pal.glass[0], pal.glass[1], pal.glass[2]);
+    babylon.torusMat.emissiveColor   = new BABYLON.Color3(pal.torus[0], pal.torus[1], pal.torus[2]);
+    babylon.hudMat1.emissiveColor    = new BABYLON.Color3(pal.hud[0], pal.hud[1], pal.hud[2]);
+    babylon.hudMat2.emissiveColor    = new BABYLON.Color3(pal.hud[0], pal.hud[1], pal.hud[2]);
+    babylon.coreLight.color = new BABYLON.Color3(pal.coreLight[0], pal.coreLight[1], pal.coreLight[2]);
+    babylon.heatLight.color = new BABYLON.Color3(pal.heatLight[0], pal.heatLight[1], pal.heatLight[2]);
+    babylon.fireSystem.color1    = new BABYLON.Color4(pal.fireC1[0], pal.fireC1[1], pal.fireC1[2], pal.fireC1[3]);
+    babylon.fireSystem.color2    = new BABYLON.Color4(pal.fireC2[0], pal.fireC2[1], pal.fireC2[2], pal.fireC2[3]);
+    babylon.fireSystem.colorDead = new BABYLON.Color4(pal.fireDead[0], pal.fireDead[1], pal.fireDead[2], pal.fireDead[3]);
+    babylon.sparkSystem.color1    = new BABYLON.Color4(pal.sparkC1[0], pal.sparkC1[1], pal.sparkC1[2], pal.sparkC1[3]);
+    babylon.sparkSystem.color2    = new BABYLON.Color4(pal.sparkC2[0], pal.sparkC2[1], pal.sparkC2[2], pal.sparkC2[3]);
+    babylon.sparkSystem.colorDead = new BABYLON.Color4(pal.sparkDead[0], pal.sparkDead[1], pal.sparkDead[2], pal.sparkDead[3]);
+  }
+
+  function initBabylonCore(){
+    if(typeof BABYLON === 'undefined'){
+      throw new Error('libreria Babylon.js non caricata');
+    }
+
+    const canvas = document.getElementById("renderCanvas");
+    const engine = new BABYLON.Engine(canvas, true, { antialias: true });
+
+    const scene = new BABYLON.Scene(engine);
+    scene.clearColor = new BABYLON.Color4(0.0, 0.0, 0.0, 1);
+
+    const camera = new BABYLON.ArcRotateCamera("camera", Math.PI / 3.0, Math.PI / 2.6, 12, BABYLON.Vector3.Zero(), scene);
+    camera.attachControl(canvas, true);
+    camera.panningSensibility = 0;
+    camera.angularSensibilityX = 500;
+    camera.angularSensibilityY = 500;
+    camera.wheelPrecision = 40;
+    camera.lowerRadiusLimit = 2.5;
+    camera.upperRadiusLimit = 40;
+    camera.minZ = 0.02;
+
+    const mainCoreNode = new BABYLON.TransformNode("mainCoreNode", scene);
+    mainCoreNode.scaling = new BABYLON.Vector3(0.001, 0.001, 0.001);
+
+    const gl = new BABYLON.GlowLayer("glow", scene, { mainTextureRatio: 0.5, blurKernelSize: 180 });
+    gl.intensity = 3.5;
+
+    const coreLight = new BABYLON.PointLight("coreLight", BABYLON.Vector3.Zero(), scene);
+    coreLight.intensity = 25;
+
+    const heatLight = new BABYLON.PointLight("heatLight", new BABYLON.Vector3(0,0,0), scene);
+    heatLight.intensity = 6;
+
+    const coreMat = new BABYLON.StandardMaterial("coreMat", scene);
+    coreMat.disableLighting = true;
+
+    const latticeMat = new BABYLON.StandardMaterial("latticeMat", scene);
+    latticeMat.wireframe = true;
+    latticeMat.disableLighting = true;
+
+    const glassMat = new BABYLON.StandardMaterial("glassMat", scene);
+    glassMat.alpha = 0.25;
+
+    const createHUDTexture = (id, type) => {
+        const dynTex = new BABYLON.DynamicTexture("hudTex_" + id, { width: 2048, height: 2048 }, scene);
+        const c2d = dynTex.getContext();
+        c2d.clearRect(0, 0, 2048, 2048);
+        const center = 1024;
+        c2d.shadowColor = "#ffffff";
+        c2d.shadowBlur = 50;
+        c2d.strokeStyle = "rgba(255, 255, 255, 1.0)";
+        c2d.fillStyle = "rgba(255, 255, 255, 1.0)";
+
+        if (type === 1) {
+            c2d.lineWidth = 14;
+            c2d.beginPath(); c2d.arc(center, center, 960, 0, Math.PI * 2); c2d.stroke();
+            c2d.lineWidth = 22;
+            c2d.setLineDash([30, 20]);
+            c2d.beginPath(); c2d.arc(center, center, 910, 0, Math.PI * 2); c2d.stroke();
+            c2d.setLineDash([]);
+            c2d.lineWidth = 6;
+            for (let a = 0; a < 360; a += 3) {
+                const rad = (a * Math.PI) / 180;
+                const len = (a % 15 === 0) ? 40 : 18;
+                const x1 = center + Math.cos(rad) * (910 - len);
+                const y1 = center + Math.sin(rad) * (910 - len);
+                const x2 = center + Math.cos(rad) * 910;
+                const y2 = center + Math.sin(rad) * 910;
+                c2d.beginPath(); c2d.moveTo(x1, y1); c2d.lineTo(x2, y2); c2d.stroke();
+            }
+        } else {
+            c2d.lineWidth = 18;
+            c2d.setLineDash([100, 40]);
+            c2d.beginPath(); c2d.arc(center, center, 880, 0, Math.PI * 2); c2d.stroke();
+        }
+        dynTex.update();
+        const mat = new BABYLON.StandardMaterial("hudMat_" + id, scene);
+        mat.diffuseColor = new BABYLON.Color3(0, 0, 0);
+        mat.emissiveTexture = dynTex;
+        mat.opacityTexture = dynTex;
+        mat.backFaceCulling = false;
+        mat.disableLighting = true;
+        return mat;
+    };
+
+    const centerCore = BABYLON.MeshBuilder.CreateSphere("centerCore", { diameter: 1.4, segments: 64 }, scene);
+    centerCore.material = coreMat;
+    centerCore.parent = mainCoreNode;
+
+    const glassSphere = BABYLON.MeshBuilder.CreateSphere("glassSphere", { diameter: 2.2, segments: 64 }, scene);
+    glassSphere.material = glassMat;
+    glassSphere.parent = mainCoreNode;
+
+    const latticeSphere = BABYLON.MeshBuilder.CreateIcoSphere("latticeSphere", { radius: 2.35, subdivisions: 4 }, scene);
+    latticeSphere.material = latticeMat;
+    latticeSphere.parent = mainCoreNode;
+
+    const hudRings = [];
+
+    const disc1 = BABYLON.MeshBuilder.CreateDisc("disc1", { radius: 3.5, tessellation: 128 }, scene);
+    const hudMat1 = createHUDTexture(1, 1);
+    disc1.material = hudMat1;
+    disc1.rotation.x = Math.PI / 2.2;
+    disc1.rotation.z = 0.25;
+    disc1.parent = mainCoreNode;
+
+    const disc2 = BABYLON.MeshBuilder.CreateDisc("disc2", { radius: 4.8, tessellation: 128 }, scene);
+    const hudMat2 = createHUDTexture(2, 2);
+    disc2.material = hudMat2;
+    disc2.rotation.x = Math.PI / 1.9;
+    disc2.rotation.z = -0.45;
+    disc2.parent = mainCoreNode;
+
+    hudRings.push({ mesh: disc1, speed: 0.004 });
+    hudRings.push({ mesh: disc2, speed: -0.006 });
+
+    const torusMat = new BABYLON.StandardMaterial("torusMat", scene);
+    torusMat.wireframe = true;
+    torusMat.disableLighting = true;
+
+    const ringConfigs = [
+        { r: 2.6, t: 0.035, rx: 1.1, rz: 0.3, speed: 0.009 },
+        { r: 4.1, t: 0.03, rx: 1.4, rz: -0.3, speed: -0.007 },
+        { r: 5.6, t: 0.025, rx: 0.8, rz: 0.5, speed: 0.005 }
+    ];
+    ringConfigs.forEach((cfg, i) => {
+        const ring = BABYLON.MeshBuilder.CreateTorus(`torus_${i}`, { diameter: cfg.r * 2, thickness: cfg.t, tessellation: 128 }, scene);
+        ring.rotation.x = cfg.rx;
+        ring.rotation.y = cfg.rz;
+        ring.material = torusMat;
+        ring.parent = mainCoreNode;
+        hudRings.push({ mesh: ring, speed: cfg.speed });
+    });
+
+    const flareTex = (() => {
+        const size = 64;
+        const dt = new BABYLON.DynamicTexture("flareTex", size, scene, false);
+        const c2 = dt.getContext();
+        const grd = c2.createRadialGradient(size/2, size/2, 0, size/2, size/2, size/2);
+        grd.addColorStop(0, "rgba(255,255,255,1)");
+        grd.addColorStop(0.4, "rgba(255,255,255,0.85)");
+        grd.addColorStop(1, "rgba(255,255,255,0)");
+        c2.clearRect(0, 0, size, size);
+        c2.fillStyle = grd;
+        c2.fillRect(0, 0, size, size);
+        dt.update();
+        dt.hasAlpha = true;
+        return dt;
+    })();
+
+    const floatingFire = new BABYLON.ParticleSystem("floatingFire", 4000, scene);
+    floatingFire.particleTexture = flareTex;
+    floatingFire.emitter = BABYLON.Vector3.Zero();
+    floatingFire.createBoxEmitter(
+        new BABYLON.Vector3(-0.2, -0.2, -0.2),
+        new BABYLON.Vector3(0.2, 0.2, 0.2),
+        new BABYLON.Vector3(-40, -40, -40),
+        new BABYLON.Vector3(40, 40, 40)
+    );
+    floatingFire.gravity = new BABYLON.Vector3(0, 0, 0);
+    floatingFire.addSizeGradient(0.0, 0.03, 0.06);
+    floatingFire.addSizeGradient(0.5, 0.15, 0.30);
+    floatingFire.addSizeGradient(1.0, 0.02, 0.05);
+    floatingFire.minLifeTime = 3.0;
+    floatingFire.maxLifeTime = 7.0;
+    floatingFire.emitRate = 600;
+    floatingFire.minEmitPower = 0.02;
+    floatingFire.maxEmitPower = 0.2;
+    floatingFire.updateSpeed = 0.008;
+    floatingFire.start();
+
+    const sparks = new BABYLON.ParticleSystem("sparks", 1200, scene);
+    sparks.particleTexture = flareTex;
+    sparks.emitter = BABYLON.Vector3.Zero();
+    sparks.createBoxEmitter(
+        new BABYLON.Vector3(-0.1, -0.1, -0.1),
+        new BABYLON.Vector3(0.1, 0.1, 0.1),
+        new BABYLON.Vector3(-45, -45, -45),
+        new BABYLON.Vector3(45, 45, 45)
+    );
+    sparks.gravity = new BABYLON.Vector3(0, 0, 0);
+    sparks.minSize = 0.015;
+    sparks.maxSize = 0.045;
+    sparks.minLifeTime = 3.0;
+    sparks.maxLifeTime = 8.0;
+    sparks.emitRate = 200;
+    sparks.minEmitPower = 0.05;
+    sparks.maxEmitPower = 0.3;
+    sparks.start();
+
+    const babylon = { scene, engine, mainCoreNode, coreMat, latticeMat, glassMat, torusMat,
+                      hudMat1, hudMat2, coreLight, heatLight, fireSystem: floatingFire, sparkSystem: sparks, spin: 1 };
+    applyColors(babylon, PALETTE.blue);
+
+    let time = 0;
+    let introProgress = 0;
+    const introDuration = 3.5;
+    let labelTriggered = false;
+
+    scene.registerBeforeRender(() => {
+        const delta = engine.getDeltaTime() / 1000;
+        time += delta;
+
+        if (introProgress < 1) {
+            introProgress += delta / introDuration;
+            if (introProgress > 1) introProgress = 1;
+            const easedProgress = Math.sin((introProgress * Math.PI) / 2);
+            const currentScale = BABYLON.Scalar.Lerp(0.001, 0.75, easedProgress);
+            mainCoreNode.scaling.setAll(currentScale);
+
+            // Attiva la classe CSS per fare comparire la scritta in modo fluido alla fine esatta dell'intro
+            if (introProgress >= 1 && !labelTriggered) {
+                labelTriggered = true;
+                const labelEl = document.getElementById("core-label");
+                if (labelEl) labelEl.classList.add("visible");
+            }
+        }
+
+        const flicker = Math.sin(time * 10.0) * 0.03 + Math.cos(time * 16.0) * 0.02;
+        const pulse = 1 + Math.sin(time * 3.5) * 0.05 + flicker;
+        centerCore.scaling.setAll(pulse);
+
+        coreLight.intensity = 22 + Math.sin(time * 12.0) * 5;
+
+        babylon.spin += (1 - babylon.spin) * 0.045;
+
+        latticeSphere.rotation.y += 0.008 * babylon.spin;
+        latticeSphere.rotation.x += 0.004 * babylon.spin;
+        hudRings.forEach(item => { item.mesh.rotation.y += item.speed * babylon.spin; });
+    });
+
+    engine.runRenderLoop(() => { scene.render(); });
+    window.addEventListener("resize", () => { engine.resize(); });
+  }
+
+  try{ initBabylonCore(); }
+  catch(err){ console.error('Babylon init error:', err); }
+
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Sinthea — Logo Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@800;900&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background-color: #060913;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    overflow: hidden;
+  }
+
+  .preview-card {
+    position: relative;
+    padding: 60px 80px;
+    background: rgba(13, 19, 33, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 28px;
+    backdrop-filter: blur(16px);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+  }
+
+  .hint-text {
+    position: absolute;
+    bottom: -35px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #94a3b8;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+
+<div class="preview-card">
+  <!-- LOGO SVG VETTORIALE -->
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 120" width="520" height="120" fill="none">
+    <defs>
+      <!-- Gradiente Viola/Rosa (Stile "esperienze digitali moderne") -->
+      <linearGradient id="purple-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#6366f1" />
+        <stop offset="50%" stop-color="#a855f7" />
+        <stop offset="100%" stop-color="#ec4899" />
+      </linearGradient>
+
+      <!-- Effetto Bagliore Neon -->
+      <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="3" result="blur" />
+        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+      </filter>
+    </defs>
+
+    <!-- BADGE ICONA APICI CODE </ > -->
+    <g transform="translate(10, 10)">
+      <!-- Scatola di supporto con bordo viola/rosa -->
+      <rect x="0" y="0" width="100" height="100" rx="24" fill="rgba(99, 102, 241, 0.08)" stroke="url(#purple-grad)" stroke-width="3" />
+      
+      <!-- Apice Sinistro < -->
+      <path d="M 32,36 L 20,50 L 32,64" stroke="#2fe0ff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+      
+      <!-- Slash / -->
+      <path d="M 58,28 L 42,72" stroke="url(#purple-grad)" stroke-width="5" stroke-linecap="round" />
+      
+      <!-- Apice Destro > -->
+      <path d="M 68,36 L 80,50 L 68,64" stroke="#ec4899" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+      
+      <!-- Punto Tech Luminoso -->
+      <circle cx="80" cy="20" r="4" fill="#2fe0ff" filter="url(#glow)"/>
+    </g>
+
+    <!-- SCRITTA SINTHEA IN GRADIENTE VIOLA -->
+    <text x="135" y="68" font-family="'Orbitron', sans-serif" font-size="52" font-weight="900" fill="url(#purple-grad)" letter-spacing="2">
+      SINTHEA
+    </text>
+
+    <!-- PAYOFF E DETTAGLIO CIRCA -->
+    <text x="140" y="94" font-family="'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="800" fill="#94a3b8" letter-spacing="6">
+      DIGITAL STUDIO
+    </text>
+
+    <!-- TRACCIA TECH INFERIORE -->
+    <path d="M 138,105 L 430,105" stroke="rgba(255,255,255,0.1)" stroke-width="2" />
+    <path d="M 430,105 L 480,105" stroke="url(#purple-grad)" stroke-width="3" stroke-linecap="round" />
+    <circle cx="488" cy="105" r="4" fill="#ec4899" filter="url(#glow)"/>
+  </svg>
+
+  <div class="hint-text">Fai uno screenshot di questo box per salvare il logo in HD</div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Kanban | Sinthea Digital Studio</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Orbitron:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #060913;
+            --card-bg: rgba(13, 19, 33, 0.85);
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.35);
+            --accent: #ec4899;
+            --accent-glow: rgba(236, 72, 153, 0.25);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        .bg-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 10% 15%, rgba(99, 102, 241, 0.15) 0%, transparent 45%),
+                radial-gradient(circle at 90% 85%, rgba(236, 72, 153, 0.12) 0%, transparent 45%),
+                radial-gradient(circle at 50% 50%, rgba(30, 41, 59, 0.2) 0%, transparent 60%);
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(6, 9, 19, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        nav {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 8rem 2rem 4rem 2rem;
+        }
+
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .app-title h1 {
+            font-size: clamp(1.8rem, 3vw, 2.5rem);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .app-title h1 span {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .app-title p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .connected {
+            background: rgba(16, 185, 129, 0.1);
+            color: #34d399;
+            border-color: rgba(16, 185, 129, 0.2);
+        }
+        .connected .status-dot { background: #34d399; box-shadow: 0 0 8px #34d399; }
+
+        .task-form {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+            background: var(--card-bg);
+            padding: 1.2rem;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            backdrop-filter: blur(12px);
+        }
+
+        .task-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            padding: 0.9rem 1.2rem;
+            border-radius: 12px;
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        .task-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.9rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+            cursor: pointer;
+            font-size: 0.95rem;
+            border: none;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            box-shadow: 0 4px 20px var(--primary-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px var(--primary-glow);
+        }
+
+        .kanban-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .kanban-column {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 1.5rem;
+            backdrop-filter: blur(12px);
+            display: flex;
+            flex-direction: column;
+            height: auto;
+            min-height: 200px;
+            max-height: 650px;
+        }
+
+        .column-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .column-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .task-count {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            padding: 0.2rem 0.7rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .column-body {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            padding-right: 0.2rem;
+            min-height: 60px;
+        }
+
+        .task-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            padding: 1rem 1.2rem;
+            border-radius: 14px;
+            cursor: grab;
+            transition: var(--transition);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .task-card:active {
+            cursor: grabbing;
+        }
+
+        .task-card:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.06);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .task-text {
+            font-size: 0.95rem;
+            color: var(--text-main);
+            word-break: break-word;
+        }
+
+        .task-delete {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: var(--transition);
+            padding: 0 0.3rem;
+        }
+
+        .task-delete:hover {
+            color: var(--accent);
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .task-form {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow"></div>
+
+    <header>
+        <nav>
+            <a href="../portfolio.html" class="logo" style="display: inline-flex; align-items: center; text-decoration: none;" title="Torna al portfolio">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 120" width="170" height="40" fill="none">
+                <defs>
+                  <linearGradient id="purple-grad-nav" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#6366f1" />
+                    <stop offset="50%" stop-color="#a855f7" />
+                    <stop offset="100%" stop-color="#ec4899" />
+                  </linearGradient>
+                  <linearGradient id="blob-grad-nav" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#00f5ff" />
+                    <stop offset="50%" stop-color="#a855f7" />
+                    <stop offset="100%" stop-color="#ec4899" />
+                  </linearGradient>
+                  <filter id="neon-glow-nav" x="-30%" y="-30%" width="160%" height="160%">
+                    <feGaussianBlur stdDeviation="4" result="blur" />
+                    <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+                  </filter>
+                  <clipPath id="nav-blob-clip">
+                    <path d="M 42,12 C 68,6 90,20 94,42 C 98,64 84,88 62,94 C 38,100 10,86 6,62 C 2,38 16,18 42,12 Z"/>
+                  </clipPath>
+                </defs>
+                <g transform="translate(10, 10)">
+                  <g clip-path="url(#nav-blob-clip)">
+                    <path d="M 42,12 C 68,6 90,20 94,42 C 98,64 84,88 62,94 C 38,100 10,86 6,62 C 2,38 16,18 42,12 Z" 
+                        fill="rgba(10, 12, 28, 0.85)" stroke="url(#blob-grad-nav)" stroke-width="5" filter="url(#neon-glow-nav)" />
+                    <path d="M 38,38 L 24,50 L 38,62" stroke="#00f5ff" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#neon-glow-nav)" />
+                    <path d="M 56,28 L 44,72" stroke="#a855f7" stroke-width="6.5" stroke-linecap="round" filter="url(#neon-glow-nav)" />
+                    <path d="M 62,38 L 76,50 L 62,62" stroke="#ec4899" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#neon-glow-nav)" />
+                  </g>
+                </g>
+                <text x="135" y="68" font-family="'Orbitron', sans-serif" font-size="52" font-weight="900" fill="url(#purple-grad-nav)" letter-spacing="2">SINTHEA</text>
+                <text x="140" y="94" font-family="'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="800" fill="#94a3b8" letter-spacing="6">DIGITAL STUDIO</text>
+              </svg>
+            </a>
+            <!-- Connessione fissa verde -->
+            <div id="connection-status" class="status-badge connected">
+                <span class="status-dot"></span> <span id="status-text" data-i18n="connected">Connesso Live</span>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="app-header">
+            <div class="app-title">
+                <h1>Task Manager <span data-i18n="title-highlight">Real-Time</span></h1>
+                <p data-i18n="subtitle">Sincronizzazione WebSocket istantanea con persistenza SQLite.</p>
+            </div>
+        </div>
+
+        <div class="task-form">
+            <input type="text" id="task-input" placeholder="Cosa devi sviluppare oggi?" class="task-input" data-i18n-placeholder="input-placeholder" onkeypress="handleKeyPress(event)">
+            <button onclick="addTask()" class="btn btn-primary">
+                <i class="fa-solid fa-plus"></i> <span data-i18n="btn-add">Aggiungi Task</span>
+            </button>
+        </div>
+
+        <div class="kanban-grid">
+            <div class="kanban-column">
+                <div class="column-header">
+                    <span class="column-title"><i class="fa-regular fa-circle" style="color: #94a3b8;"></i> <span data-i18n="col-todo">Da Fare</span></span>
+                    <span id="count-todo" class="task-count">0</span>
+                </div>
+                <div id="column-todo" class="column-body" ondragover="allowDrop(event)" ondrop="drop(event, 'todo')"></div>
+            </div>
+
+            <div class="kanban-column">
+                <div class="column-header">
+                    <span class="column-title" style="color: #fbbf24;"><i class="fa-solid fa-spinner fa-spin-pulse"></i> <span data-i18n="col-inprogress">In Corso</span></span>
+                    <span id="count-inprogress" class="task-count">0</span>
+                </div>
+                <div id="column-inprogress" class="column-body" ondragover="allowDrop(event)" ondrop="drop(event, 'inprogress')"></div>
+            </div>
+
+            <div class="kanban-column">
+                <div class="column-header">
+                    <span class="column-title" style="color: #34d399;"><i class="fa-regular fa-circle-check"></i> <span data-i18n="col-done">Completati</span></span>
+                    <span id="count-done" class="task-count">0</span>
+                </div>
+                <div id="column-done" class="column-body" ondragover="allowDrop(event)" ondrop="drop(event, 'done')"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const translations = {
+            it: {
+                connected: "Connesso Live",
+                "title-highlight": "Real-Time",
+                subtitle: "Sincronizzazione WebSocket istantanea con persistenza SQLite.",
+                "input-placeholder": "Cosa devi sviluppare oggi?",
+                "btn-add": "Aggiungi Task",
+                "col-todo": "Da Fare",
+                "col-inprogress": "In Corso",
+                "col-done": "Completati"
+            },
+            en: {
+                connected: "Live Connected",
+                "title-highlight": "Real-Time",
+                subtitle: "Instant WebSocket synchronization with SQLite persistence.",
+                "input-placeholder": "What do you need to build today?",
+                "btn-add": "Add Task",
+                "col-todo": "To Do",
+                "col-inprogress": "In Progress",
+                "col-done": "Completed"
+            },
+            fr: {
+                connected: "Connecté en Direct",
+                "title-highlight": "Temps Réel",
+                subtitle: "Synchronisation WebSocket instantanée avec persistance SQLite.",
+                "input-placeholder": "Que devez-vous développer aujourd'hui ?",
+                "btn-add": "Ajouter",
+                "col-todo": "À Faire",
+                "col-inprogress": "En Cours",
+                "col-done": "Terminés"
+            },
+            es: {
+                connected: "Conectado en Vivo",
+                "title-highlight": "Tiempo Real",
+                subtitle: "Sincronización WebSocket instantánea con persistencia SQLite.",
+                "input-placeholder": "¿Qué necesitas desarrollar hoy?",
+                "btn-add": "Añadir Tarea",
+                "col-todo": "Por Hacer",
+                "col-inprogress": "En Progreso",
+                "col-done": "Completados"
+            },
+            de: {
+                connected: "Live Verbunden",
+                "title-highlight": "Echtzeit",
+                subtitle: "Echtzeit-WebSocket-Synchronisierung mit SQLite-Persistenz.",
+                "input-placeholder": "Was möchtest du heute entwickeln?",
+                "btn-add": "Aufgabe Hinzufügen",
+                "col-todo": "Zu Tun",
+                "col-inprogress": "In Bearbeitung",
+                "col-done": "Abgeschlossen"
+            },
+            zh: {
+                connected: "实时已连接",
+                "title-highlight": "实时",
+                subtitle: "带SQLite持久化的即时WebSocket同步。",
+                "input-placeholder": "今天需要开发什么？",
+                "btn-add": "添加任务",
+                "col-todo": "待办",
+                "col-inprogress": "进行中",
+                "col-done": "已完成"
+            },
+            ja: {
+                connected: "ライブ接続中",
+                "title-highlight": "リアルタイム",
+                subtitle: "SQLite永続化を備えたリアルタイムWebSocket同期。",
+                "input-placeholder": "今日は何を開発しますか？",
+                "btn-add": "タスク追加",
+                "col-todo": "未完了",
+                "col-inprogress": "進行中",
+                "col-done": "完了"
+            }
+        };
+
+        function applySavedLanguage() {
+            let lang = localStorage.getItem('sinthea_lang') || localStorage.getItem('lang') || localStorage.getItem('language') || 'it';
+            if (!translations[lang]) lang = 'it';
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang][key]) {
+                    el.textContent = translations[lang][key];
+                }
+            });
+
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (translations[lang][key]) {
+                    el.placeholder = translations[lang][key];
+                }
+            });
+
+            window.currentAppLang = lang;
+        }
+
+        applySavedLanguage();
+
+        // Gestione autonoma dei task (senza server backend)
+        let tasks = [
+            
+        ];
+
+        function renderBoard() {
+            ['todo', 'inprogress', 'done'].forEach(status => {
+                const col = document.getElementById(`column-${status}`);
+                col.innerHTML = '';
+                const filtered = tasks.filter(t => t.status === status);
+                document.getElementById(`count-${status}`).textContent = filtered.length;
+
+                filtered.forEach(task => {
+                    const card = document.createElement('div');
+                    card.className = 'task-card';
+                    card.draggable = true;
+                    card.ondragstart = (e) => e.dataTransfer.setData('text/plain', task.id);
+
+                    const titleSpan = document.createElement('span');
+                    titleSpan.className = 'task-text';
+                    titleSpan.textContent = task.title;
+                    card.appendChild(titleSpan);
+
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
+                    deleteBtn.className = 'task-delete';
+                    deleteBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        deleteTask(task.id);
+                    };
+                    card.appendChild(deleteBtn);
+
+                    col.appendChild(card);
+                });
+            });
+        }
+
+        function addTask() {
+            const input = document.getElementById('task-input');
+            const title = input.value.trim();
+            if (!title) return;
+
+            const newTask = {
+                id: Date.now().toString(),
+                title: title,
+                status: 'todo'
+            };
+
+            tasks.push(newTask);
+            renderBoard();
+            input.value = '';
+        }
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') {
+                addTask();
+            }
+        }
+
+        function deleteTask(taskId) {
+            tasks = tasks.filter(t => t.id !== taskId);
+            renderBoard();
+        }
+
+        function allowDrop(e) {
+            e.preventDefault();
+        }
+
+        function drop(e, newStatus) {
+            e.preventDefault();
+            const taskId = e.dataTransfer.getData('text/plain');
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                task.status = newStatus;
+                renderBoard();
+            }
+        }
+
+        // Primo avvio della board a schermo
+        renderBoard();
+    </script>
+</body>
+</html>

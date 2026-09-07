@@ -1,0 +1,1830 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sinthea | Web Developer & Graphic Designer</title>
+    
+    <meta name="description" content="Portfolio ufficiale di Davide Stefani (Sinthea) - Web Developer & Graphic Designer. Creazione di interfacce uniche e moderne esperienze digitali.">
+    <meta name="keywords" content="Web Developer, Graphic Designer, Treviso, Frontend, Sinthea, Portfolio, HTML, CSS, JavaScript, Babylon.js">
+    <meta name="author" content="Davide Filippo Stefani">
+    <meta property="og:title" content="Sinthea | Web Developer & Graphic Designer">
+    <meta property="og:description" content="Scopri i miei progetti, le mie competenze e contattami per una collaborazione digitale.">
+    <meta property="og:type" content="website">
+    
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='none'><defs><linearGradient id='blob-grad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%2300f5ff'/><stop offset='50%' stop-color='%23a855f7'/><stop offset='100%' stop-color='%23ec4899'/></linearGradient><filter id='glow' x='-20%' y='-20%' width='140%' height='140%'><feGaussianBlur stdDeviation='2' result='blur'/><feMerge><feMergeNode in='blur'/><feMergeNode in='SourceGraphic'/></feMerge></filter><clipPath id='blob-clip'><path d='M 42,12 C 68,6 90,20 94,42 C 98,64 84,88 62,94 C 38,100 10,86 6,62 C 2,38 16,18 42,12 Z'/></clipPath></defs><rect width='100' height='100' rx='20' fill='%23060913'/><g clip-path='url(%23blob-clip)'><path d='M 42,12 C 68,6 90,20 94,42 C 98,64 84,88 62,94 C 38,100 10,86 6,62 C 2,38 16,18 42,12 Z' fill='rgba(10,12,28,0.85)' stroke='url(%23blob-grad)' stroke-width='4' filter='url(%23glow)'/><path d='M 38,38 L 24,50 L 38,62' stroke='%2300f5ff' stroke-width='6.5' stroke-linecap='round' stroke-linejoin='round' filter='url(%23glow)'/><path d='M 56,28 L 44,72' stroke='%23a855f7' stroke-width='6.5' stroke-linecap='round' filter='url(%23glow)'/><path d='M 62,38 L 76,50 L 62,62' stroke='%23ec4899' stroke-width='6.5' stroke-linecap='round' stroke-linejoin='round' filter='url(%23glow)'/></g></svg>">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Orbitron:wght@600;700;800;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babylonjs/8.20.0/babylon.min.js" crossorigin="anonymous"></script>
+    
+    <style>
+        :root {
+            --bg-color: #060913;
+            --card-bg: rgba(13, 19, 33, 0.85);
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.35);
+            --accent: #ec4899;
+            --accent-glow: rgba(236, 72, 153, 0.25);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
+            line-height: 1.7;
+        }
+
+        .bg-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 10% 15%, rgba(99, 102, 241, 0.15) 0%, transparent 45%),
+                radial-gradient(circle at 90% 85%, rgba(236, 72, 153, 0.12) 0%, transparent 45%),
+                radial-gradient(circle at 50% 50%, rgba(30, 41, 59, 0.2) 0%, transparent 60%);
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: var(--transition);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(6, 9, 19, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        nav {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 2rem;
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text-main);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-right-container {
+            display: flex;
+            align-items: center;
+            gap: 2.2rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.2rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--primary);
+        }
+
+        /* Custom Language Dropdown Styles */
+        .language-switcher {
+            position: relative;
+            display: inline-block;
+            z-index: 2500;
+            font-family: inherit;
+        }
+
+        .lang-selected {
+            background: var(--card-bg);
+            color: #ffffff;
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 2.2rem 0.5rem 3.2rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            user-select: none;
+        }
+
+        .lang-selected:hover {
+            border-color: var(--primary);
+            background: rgba(13, 19, 33, 0.95);
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        .language-switcher .selected-flag,
+        .language-switcher .flag-icon {
+            position: absolute;
+            left: 1.1rem;
+            width: 20px;
+            height: 14px;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            border-radius: 2px;
+        }
+
+        .language-switcher .selected-flag {
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .language-switcher .arrow-icon {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+        }
+
+        .language-switcher.active .arrow-icon {
+            transform: translateY(-50%) rotate(180deg);
+        }
+
+        .lang-dropdown-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            width: 160px;
+            background: rgba(13, 19, 33, 0.95);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            overflow: hidden;
+            display: none;
+            flex-direction: column;
+            z-index: 3000;
+        }
+
+        .language-switcher.active .lang-dropdown-menu {
+            display: flex;
+        }
+
+        .lang-option {
+            position: relative;
+            padding: 0.7rem 1rem 0.7rem 3.2rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+        }
+
+        .lang-option:hover {
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--text-main);
+        }
+
+        .lang-option .flag-icon {
+            left: 1.1rem;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: var(--text-main);
+            font-size: 1.5rem;
+            z-index: 1900;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 7rem 2rem;
+        }
+
+        #hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            padding-top: 4rem;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.5rem 1rem;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 2rem;
+            white-space: nowrap;
+        }
+
+        .hero-badge span.dot {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--primary);
+            display: inline-block;
+        }
+
+        .hero-content h1 {
+            font-size: clamp(2.8rem, 6vw, 5.2rem);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+        }
+
+        .hero-content h1 span {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .typing-container {
+            font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            min-height: 2.5rem;
+        }
+
+        .hero-content p {
+            font-size: clamp(1rem, 1.8vw, 1.15rem);
+            color: var(--text-muted);
+            max-width: 650px;
+            margin: 0 auto 2.5rem auto;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.9rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            box-shadow: 0 4px 25px var(--primary-glow);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px var(--primary-glow);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.08);
+            transform: translateY(-3px);
+        }
+
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+            padding: 3rem 2rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            backdrop-filter: blur(12px);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.4rem;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-tag {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--primary);
+            margin-bottom: 0.8rem;
+            display: block;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .about-text p {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            font-size: 1.05rem;
+        }
+
+        .skills-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 2.5rem;
+            border-radius: 24px;
+            backdrop-filter: blur(12px);
+        }
+
+        .skill-category h3 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .skill-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.7rem;
+        }
+
+        .skill-tag {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 500;
+            color: var(--text-main);
+            transition: var(--transition);
+        }
+
+        .skill-tag:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .timeline {
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 20px;
+            height: 100%;
+            width: 2px;
+            background: var(--border-color);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 3rem;
+            padding-left: 3.5rem;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            top: 5px;
+            left: 11px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: 4px solid var(--bg-color);
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .timeline-content {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+            border-radius: 20px;
+            backdrop-filter: blur(12px);
+            transition: var(--transition);
+        }
+
+        .timeline-content:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+        }
+
+        .timeline-date {
+            display: inline-block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            background: rgba(99, 102, 241, 0.1);
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+        }
+
+        .timeline-content h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .timeline-content h4 {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .timeline-content p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .project-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            overflow: hidden;
+            backdrop-filter: blur(12px);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .project-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .project-badge-wip {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(236, 72, 153, 0.2);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            backdrop-filter: blur(5px);
+            z-index: 10;
+        }
+
+        .project-info {
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .project-techs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .project-tech {
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            color: var(--text-muted);
+        }
+
+        .project-info h3 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+        }
+
+        .project-info p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+            flex-grow: 1;
+        }
+
+        .project-links {
+            display: flex;
+            gap: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            padding-top: 1.2rem;
+        }
+
+        .project-links button, .project-links a {
+            background: none;
+            border: none;
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .project-links button:hover, .project-links a:hover {
+            color: var(--primary);
+        }
+
+        .contact-container {
+            display: grid;
+            grid-template-columns: 1fr 1.3fr;
+            gap: 4rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 30px;
+            padding: 3.5rem;
+            backdrop-filter: blur(12px);
+        }
+
+        .contact-info-col h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .contact-info-col p {
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+            font-size: 0.98rem;
+        }
+
+        .contact-details-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            list-style: none;
+        }
+
+        .contact-detail-item {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .contact-detail-item i {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            flex-shrink: 0;
+        }
+
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .form-group input, 
+        .form-group textarea {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-main);
+            font-family: inherit;
+            transition: var(--transition);
+        }
+
+        .form-group input:focus, 
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 130px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 3000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(6, 9, 19, 0.85);
+            backdrop-filter: blur(10px);
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 2.5rem;
+            border-radius: 24px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        .modal-close:hover {
+            color: var(--text-main);
+        }
+
+        footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1.2rem;
+        }
+
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-main);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .social-links a:hover {
+            border-color: var(--primary);
+            background: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        @media (max-width: 968px) {
+            .about-grid, .contact-container {
+                grid-template-columns: 1fr;
+                gap: 2.5rem;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-right-container {
+                position: fixed;
+                top: 75px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 75px);
+                background: rgba(6, 9, 19, 0.98);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                transition: var(--transition);
+                gap: 2rem;
+                border-top: 1px solid var(--border-color);
+                z-index: 1500;
+            }
+            .nav-right-container.active {
+                left: 0;
+            }
+            .nav-links {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+            .hamburger {
+                display: block;
+            }
+            .contact-container {
+                padding: 2rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow"></div>
+
+    <header>
+        <nav>
+            <a href="#hero" class="logo" style="display: inline-flex; align-items: center; text-decoration: none;">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 120" width="190" height="44" fill="none">
+                <defs>
+                  <linearGradient id="purple-grad-nav" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#6366f1" />
+                    <stop offset="50%" stop-color="#a855f7" />
+                    <stop offset="100%" stop-color="#ec4899" />
+                  </linearGradient>
+
+                  <linearGradient id="blob-grad-nav" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#00f5ff" />
+                    <stop offset="50%" stop-color="#a855f7" />
+                    <stop offset="100%" stop-color="#ec4899" />
+                  </linearGradient>
+
+                  <filter id="neon-glow-nav" x="-30%" y="-30%" width="160%" height="160%">
+                    <feGaussianBlur stdDeviation="4" result="blur" />
+                    <feMerge>
+                      <feMergeNode in="blur" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                  </filter>
+
+                  <clipPath id="nav-blob-clip">
+                    <path d="M 42,12 C 68,6 90,20 94,42 C 98,64 84,88 62,94 C 38,100 10,86 6,62 C 2,38 16,18 42,12 Z"/>
+                  </clipPath>
+                </defs>
+
+                <g transform="translate(10, 10)">
+                  <g clip-path="url(#nav-blob-clip)">
+                    <path d="M 42,12 C 68,6 90,20 94,42 C 98,64 84,88 62,94 C 38,100 10,86 6,62 C 2,38 16,18 42,12 Z" 
+                          fill="rgba(10, 12, 28, 0.85)" 
+                          stroke="url(#blob-grad-nav)" 
+                          stroke-width="5" 
+                          filter="url(#neon-glow-nav)" />
+                    
+                    <path d="M 38,38 L 24,50 L 38,62" stroke="#00f5ff" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#neon-glow-nav)" />
+                    <path d="M 56,28 L 44,72" stroke="#a855f7" stroke-width="6.5" stroke-linecap="round" filter="url(#neon-glow-nav)" />
+                    <path d="M 62,38 L 76,50 L 62,62" stroke="#ec4899" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#neon-glow-nav)" />
+                  </g>
+                </g>
+
+                <text x="135" y="68" font-family="'Orbitron', sans-serif" font-size="52" font-weight="900" fill="url(#purple-grad-nav)" letter-spacing="2">
+                  SINTHEA
+                </text>
+
+                <text x="140" y="94" font-family="'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="800" fill="#94a3b8" letter-spacing="6">
+                  DIGITAL STUDIO
+                </text>
+
+                <path d="M 138,105 L 430,105" stroke="rgba(255,255,255,0.1)" stroke-width="2" />
+                <path d="M 430,105 L 480,105" stroke="url(#purple-grad-nav)" stroke-width="3" stroke-linecap="round" />
+                <circle cx="488" cy="105" r="4" fill="#ec4899" filter="url(#neon-glow-nav)"/>
+              </svg>
+            </a>
+
+            <div class="nav-right-container">
+                <ul class="nav-links">
+                    <li><a href="#about" data-translate="nav-about">Chi sono</a></li>
+                    <li><a href="#experience" data-translate="nav-exp">Formazione</a></li>
+                    <li><a href="#projects" data-translate="nav-proj">Progetti</a></li>
+                    <li><a href="#contact" data-translate="nav-contact">Contatti</a></li>
+                </ul>
+
+                <div class="language-switcher" id="custom-lang-switcher">
+                    <div class="lang-selected" id="lang-selected-toggle">
+                        <span class="selected-flag" id="active-flag-icon" style="background-image: url('ita.png');"></span>
+                        <span id="active-lang-text">Italiano</span>
+                        <i class="fa-solid fa-chevron-down arrow-icon"></i>
+                    </div>
+                    <div class="lang-dropdown-menu" id="lang-dropdown-options">
+                        <div class="lang-option" data-value="it"><span class="flag-icon" style="background-image: url('ita.png');"></span><strong>Italiano</strong></div>
+                        <div class="lang-option" data-value="en"><span class="flag-icon" style="background-image: url('ing.png');"></span><strong>English</strong></div>
+                        <div class="lang-option" data-value="fr"><span class="flag-icon" style="background-image: url('fra.png');"></span><strong>Français</strong></div>
+                        <div class="lang-option" data-value="es"><span class="flag-icon" style="background-image: url('spa.png');"></span><strong>Español</strong></div>
+                        <div class="lang-option" data-value="de"><span class="flag-icon" style="background-image: url('ted.png');"></span><strong>Deutsch</strong></div>
+                        <div class="lang-option" data-value="zh"><span class="flag-icon" style="background-image: url('cin.png');"></span><strong>中文</strong></div>
+                        <div class="lang-option" data-value="ja"><span class="flag-icon" style="background-image: url('gia.png');"></span><strong>日本語</strong></div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="hamburger" id="hamburger-btn" aria-label="Menu di navigazione">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </nav>
+    </header>
+
+    <section id="hero">
+        <div class="container">
+            <div class="hero-content reveal">
+                <div class="hero-badge">
+                    <span class="dot"></span> <span data-translate="hero-badge">Da remoto & provincia di Treviso</span>
+                </div>
+                <h1 data-translate="hero-title">Creo interfacce uniche e <span>esperienze digitali moderne</span></h1>
+                <div class="typing-container" id="typing-text"></div>
+                <p><span data-translate="hero-desc-1">Ciao, sono</span> Davide! <span data-translate="hero-desc-2">Ho 18 anni, studio all'ITIS informatico e unisco la passione per lo sviluppo web e il graphic design per dare vita a siti curati nei minimi dettagli.</span></p>
+                <div class="btn-group">
+                    <a href="#projects" class="btn btn-primary"><span data-translate="btn-projects">Esplora i Progetti</span> <i class="fa-solid fa-arrow-down"></i></a>
+                    <a href="#contact" class="btn btn-outline" data-translate="btn-contact">Contattami</a>
+                </div>
+
+                <div class="stats-section reveal">
+                    <div class="stat-item">
+                        <div class="stat-number">18</div>
+                        <div class="stat-label" data-translate="stat-1">Anni di Passione Tech</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">ITIS</div>
+                        <div class="stat-label" data-translate="stat-2">Indirizzo Informatico</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">100%</div>
+                        <div class="stat-label" data-translate="stat-3">Dedicato ai dettagli</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="container">
+        <div class="section-header reveal">
+            <span class="section-tag" data-translate="about-tag">Profilo</span>
+            <h2 class="section-title"><span data-translate="about-title-1">Chi</span> <span data-translate="about-title-2">Sono</span></h2>
+        </div>
+        <div class="about-grid">
+            <div class="about-text reveal">
+                <p data-translate="about-p1">Frequento l'ITIS con indirizzo informatico e mi definisco un web developer e graphic designer orientato al design pulito e all'interattività.</p>
+                <p><span data-translate="about-p2-part1">Lavoro principalmente da remoto, ma sono disponibile per collaborazioni e incontri in presenza per persone e aziende che si trovano nelle zone limitrofe della provincia di</span> Treviso.</p>
+                <p data-translate="about-p3">Curo ogni riga di codice e progetto ogni grafica con l'obiettivo di bilanciare estetica visiva e solidità tecnica.</p>
+                <a href="#contact" class="btn btn-primary" style="margin-top: 1rem;"><span data-translate="btn-idea">Parliamo di un'idea</span> <i class="fa-solid fa-paper-plane"></i></a>
+            </div>
+            <div class="skills-container reveal">
+                <div class="skill-category">
+                    <h3><i class="fa-solid fa-laptop-code text-primary"></i> <span data-translate="skills-title-1">Sviluppo Web & Code</span></h3>
+                    <div class="skill-tags">
+                        <span class="skill-tag">HTML5 / CSS3</span>
+                        <span class="skill-tag">JavaScript</span>
+                        <span class="skill-tag">C#</span>
+                        <span class="skill-tag">Babylon.js</span>
+                        <span class="skill-tag">PHP</span>
+                    </div>
+                </div>
+                <div class="skill-category">
+                    <h3><i class="fa-solid fa-palette text-primary"></i> <span data-translate="skills-title-2">Design & Tool</span></h3>
+                    <div class="skill-tags">
+                        <span class="skill-tag" data-translate="tag-graphic">Graphic Design</span>
+                        <span class="skill-tag" data-translate="tag-web">Web Design</span>
+                        <span class="skill-tag">Figma</span>
+                        <span class="skill-tag">UI/UX Layouts</span>
+                        <span class="skill-tag">Visual Studio Code</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="experience" class="container">
+        <div class="section-header reveal">
+            <span class="section-tag" data-translate="exp-tag">Percorso</span>
+            <h2 class="section-title"><span data-translate="exp-title-1">Formazione &</span> <span data-translate="exp-title-2">Competenze</span></h2>
+        </div>
+        <div class="timeline">
+            <div class="timeline-item reveal">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <span class="timeline-date" data-translate="timeline-date-1">In Corso</span>
+                    <h3 data-translate="timeline-h1">Studente ITIS Informatico</h3>
+                    <h4 data-translate="timeline-h4-1">Approfondimento di Algoritmi, Linguaggi e Sistemi</h4>
+                    <p data-translate="timeline-p1">Studio costante delle basi informatiche, programmazione a oggetti, logica di rete e strutture dati avanzate.</p>
+                </div>
+            </div>
+            <div class="timeline-item reveal">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <span class="timeline-date" data-translate="timeline-date-2">Autodidatta & Progetti</span>
+                    <h3 data-translate="timeline-h2">Web Developer & Graphic Designer</h3>
+                    <h4 data-translate="timeline-h4-2">Sviluppo di Interfacce e Applicazioni Personali</h4>
+                    <p data-translate="timeline-p2">Sperimentazione pratica con HTML, CSS, JavaScript e C#. Studio dell'interfaccia utente tramite Figma e creazione di concept avanzati come Nexus e MindFlow AI.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="projects" class="container">
+        <div class="section-header reveal">
+            <span class="section-tag" data-translate="proj-tag">Portfolio</span>
+            <h2 class="section-title"><span data-translate="proj-title-1">I Miei</span> <span data-translate="proj-title-2">Progetti</span></h2>
+        </div>
+        <div class="projects-grid">
+            <div class="project-card reveal">
+                <div class="project-img-wrapper" style="position: relative; width: 100%; height: 220px; overflow: hidden; background: #000;">
+                    <span class="project-badge-wip" data-translate="badge-demo">Demo Disponibile</span>
+                    <img src="NEXUS.jpg" alt="Demo Nexus" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;">
+                </div>
+                <div class="project-info">
+                    <div class="project-techs">
+                        <span class="project-tech">HTML/CSS</span>
+                        <span class="project-tech">JavaScript</span>
+                        <span class="project-tech">Babylon.js</span>
+                    </div>
+                    <h3>Nexus AI</h3>
+                    <p data-translate="proj-desc-1">Pannello di controllo analitico e gestionale con motore 3D interattivo integrato (versione dimostrativa disponibile).</p>
+                    <div class="project-links">
+                        <a href="../portfolio/nexus-demo.html"><i class="fa-solid fa-eye"></i> <span data-translate="btn-preview">Anteprima Demo</span></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PROGETTO 2 AGGIORNATO CON IL TASK MANAGER REAL-TIME -->
+            <div class="project-card reveal">
+                <div class="project-img-wrapper" style="position: relative; width: 100%; height: 220px; overflow: hidden; background: #000;">
+                    <span class="project-badge-wip" data-translate="badge-demo">Demo Disponibile</span>
+					<img src="../portfolio/app/task.jpg" alt="Demo Nexus" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;">
+                    <!-- <div style="width:100%; height:100%; background: linear-gradient(135deg, #0d1321, #1e1b4b); display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 3.5rem;">
+                        <i class="fa-solid fa-list-check"></i>
+                    </div>
+					-->
+                </div>
+                <div class="project-info">
+                    <div class="project-techs">
+                        <span class="project-tech">HTML5 / CSS3</span>
+                        <span class="project-tech">JavaScript</span>
+                        <span class="project-tech">LocalStorage</span>
+                    </div>
+                    <h3 data-translate="task-title">Task Manager Real-Time</h3>
+                    <p data-translate="task-desc">Applicazione interattiva in tempo reale con gestione flussi di lavoro,dinamico e persistenza dati.</p>
+                    <div class="project-links">
+                        <a href="../portfolio/app/index.html"><i class="fa-solid fa-eye"></i> <span data-translate="btn-preview">Anteprima Demo</span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="demoModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <i class="fa-solid fa-person-digging" style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
+            <h3 id="modalTitle" style="font-size: 1.5rem; margin-bottom: 0.8rem;">Titolo Progetto</h3>
+            <p id="modalDesc" style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;"></p>
+            <button class="btn btn-primary" onclick="closeModal()" style="width: 100%; justify-content: center;" data-translate="btn-gotit">Ho capito</button>
+        </div>
+    </div>
+
+    <section id="contact" class="container">
+        <div class="section-header reveal">
+            <span class="section-tag" data-translate="contact-tag">Contattami</span>
+            <h2 class="section-title"><span data-translate="contact-title-1">Mettiti in</span> <span data-translate="contact-title-2">Contatto</span></h2>
+        </div>
+        <div class="contact-container reveal">
+            <div class="contact-info-col">
+                <h3 data-translate="contact-subtitle">Parliamo del tuo sito web</h3>
+                <p><span data-translate="contact-text-part1">Hai bisogno di un restyling grafico, di un nuovo sito web o vuoi collaborare? Lavoro da remoto ma se ti trovi in provincia di</span> Treviso <span data-translate="contact-text-part2">possiamo anche vederci di persona. Scrivimi pure!</span></p>
+                <ul class="contact-details-list">
+                    <li class="contact-detail-item">
+                        <i class="fa-solid fa-envelope"></i>
+                        <span>sintheadigitalstudio@gmail.com</span>
+                    </li>
+                    <li class="contact-detail-item">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <span><span data-translate="location-prov">Provincia di</span> Treviso & <span data-translate="location-remote">Remoto</span></span>
+                    </li>
+                </ul>
+            </div>
+            <form class="contact-form" action="https://formspree.io/f/meaqlbkz" method="POST">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="name" data-translate="form-name">Il tuo Nome</label>
+                        <input type="text" id="name" name="name" placeholder="Mario Rossi" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email" data-translate="form-email">La tua Email</label>
+                        <input type="email" id="email" name="email" placeholder="mario@example.com" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="subject" data-translate="form-subject">Oggetto</label>
+                    <input type="text" id="subject" name="subject" placeholder="Dettagli della tua richiesta" required>
+                </div>
+                <div class="form-group">
+                    <label for="message" data-translate="form-message">Il tuo Messaggio</label>
+                    <textarea id="message" name="message" placeholder="Scrivimi i dettagli della tua richiesta..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="justify-content: center; width: 100%; margin-top: 0.5rem;"><span data-translate="form-submit">Invia Messaggio</span> <i class="fa-solid fa-paper-plane"></i></button>
+            </form>
+        </div>
+    </section>
+
+    <footer>
+        <a href="#hero" style="display: inline-flex; align-items: center; text-decoration: none;">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 120" width="180" height="42" fill="none">
+            <defs>
+              <linearGradient id="purple-grad-ft" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#6366f1" />
+                <stop offset="50%" stop-color="#a855f7" />
+                <stop offset="100%" stop-color="#ec4899" />
+              </linearGradient>
+
+              <linearGradient id="blob-grad-ft" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#00f5ff" />
+                <stop offset="50%" stop-color="#a855f7" />
+                <stop offset="100%" stop-color="#ec4899" />
+              </linearGradient>
+
+              <filter id="neon-glow-ft" x="-30%" y="-30%" width="160%" height="160%">
+                <feGaussianBlur stdDeviation="4" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+
+              <clipPath id="ft-blob-clip">
+                <path d="M 42,12 C 68,6 90,20 94,42 C 98,64 84,88 62,94 C 38,100 10,86 6,62 C 2,38 16,18 42,12 Z"/>
+              </clipPath>
+            </defs>
+
+            <g transform="translate(10, 10)">
+              <g clip-path="url(#ft-blob-clip)">
+                <path d="M 42,12 C 68,6 90,20 94,42 C 98,64 84,88 62,94 C 38,100 10,86 6,62 C 2,38 16,18 42,12 Z" 
+                      fill="rgba(10, 12, 28, 0.85)" 
+                      stroke="url(#blob-grad-ft)" 
+                      stroke-width="5" 
+                      filter="url(#neon-glow-ft)" />
+                
+                <path d="M 38,38 L 24,50 L 38,62" stroke="#00f5ff" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#neon-glow-ft)" />
+                <path d="M 56,28 L 44,72" stroke="#a855f7" stroke-width="6.5" stroke-linecap="round" filter="url(#neon-glow-ft)" />
+                <path d="M 62,38 L 76,50 L 62,62" stroke="#ec4899" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#neon-glow-ft)" />
+              </g>
+            </g>
+
+            <text x="135" y="68" font-family="'Orbitron', sans-serif" font-size="52" font-weight="900" fill="url(#purple-grad-ft)" letter-spacing="2">
+              SINTHEA
+            </text>
+
+            <text x="140" y="94" font-family="'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="800" fill="#94a3b8" letter-spacing="6">
+              DIGITAL STUDIO
+            </text>
+
+            <path d="M 138,105 L 430,105" stroke="rgba(255,255,255,0.1)" stroke-width="2" />
+            <path d="M 430,105 L 480,105" stroke="url(#purple-grad-ft)" stroke-width="3" stroke-linecap="round" />
+            <circle cx="488" cy="105" r="4" fill="#ec4899" filter="url(#neon-glow-ft)"/>
+          </svg>
+        </a>
+
+        <p>&copy;  2026 Davide Filippo Stefani — Sinthea Digital Studio. <span data-translate="footer-rights">Tutti i diritti riservati.</span></p>
+    </footer>
+
+    <script>
+        const hamburgerBtn = document.getElementById('hamburger-btn');
+        const navRightContainer = document.querySelector('.nav-right-container');
+
+        hamburgerBtn.addEventListener('click', () => {
+            navRightContainer.classList.toggle('active');
+            const icon = hamburgerBtn.querySelector('i');
+            if(navRightContainer.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-xmark');
+            } else {
+                icon.classList.remove('fa-xmark');
+                icon.classList.add('fa-bars');
+            }
+        });
+
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navRightContainer.classList.remove('active');
+                hamburgerBtn.querySelector('i').classList.remove('fa-xmark');
+                hamburgerBtn.querySelector('i').classList.add('fa-bars');
+            });
+        });
+
+        const flagMap = {
+            'it': 'ita.png',
+            'en': 'ing.png',
+            'fr': 'fra.png',
+            'es': 'spa.png',
+            'de': 'ted.png',
+            'zh': 'cin.png',
+            'ja': 'gia.png'
+        };
+
+        const langSwitcher = document.getElementById('custom-lang-switcher');
+        const langToggle = document.getElementById('lang-selected-toggle');
+        const activeFlagIcon = document.getElementById('active-flag-icon');
+        const activeLangText = document.getElementById('active-lang-text');
+
+        // Apri/Chiudi menu a tendina
+        langToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            langSwitcher.classList.toggle('active');
+        });
+
+        // Chiudi cliccando fuori
+        window.addEventListener('click', () => {
+            langSwitcher.classList.remove('active');
+        });
+
+        const translations = {
+            en: {
+                "nav-about": "About Me",
+                "nav-exp": "Education",
+                "nav-proj": "Projects",
+                "nav-contact": "Contact",
+                "hero-badge": "Remote & Treviso area",
+                "hero-title": "I create unique interfaces and <span>modern digital experiences</span>",
+                "hero-desc-1": "Hi, I'm",
+                "hero-desc-2": "I'm 18, study computer science at ITIS and combine a passion for web development and graphic design to bring meticulously crafted sites to life.",
+                "btn-projects": "Explore Projects",
+                "btn-contact": "Contact Me",
+                "stat-1": "Years of Tech Passion",
+                "stat-2": "Computer Science Major",
+                "stat-3": "Dedicated to Details",
+                "about-tag": "Profile",
+                "about-title-1": "About",
+                "about-title-2": "Me",
+                "about-p1": "I attend ITIS majoring in computer science and define myself as a web developer and graphic designer focused on clean design and interactivity.",
+                "about-p2-part1": "I work mainly remotely, but I am available for collaborations and in-person meetings for people and companies located in the surrounding areas of the province of",
+                "about-p3": "I care for every line of code and design every asset aiming to balance visual aesthetics and technical solidity.",
+                "btn-idea": "Let's Talk About an Idea",
+                "skills-title-1": "Web Development & Code",
+                "skills-title-2": "Design & Tools",
+                "tag-graphic": "Graphic Design",
+                "tag-web": "Web Design",
+                "exp-tag": "Journey",
+                "exp-title-1": "Education &",
+                "exp-title-2": "Skills",
+                "timeline-date-1": "Ongoing",
+                "timeline-h1": "ITIS Computer Science Student",
+                "timeline-h4-1": "In-depth Study of Algorithms, Languages and Systems",
+                "timeline-p1": "Constant study of computer science foundations, object-oriented programming, network logic and advanced data structures.",
+                "timeline-date-2": "Self-Taught & Projects",
+                "timeline-h2": "Web Developer & Graphic Designer",
+                "timeline-h4-2": "Development of Interfaces and Personal Apps",
+                "timeline-p2": "Practical experimentation with HTML, CSS, JavaScript and C#. User interface study via Figma and creation of advanced concepts like Nexus and MindFlow AI.",
+                "proj-tag": "Portfolio",
+                "proj-title-1": "My",
+                "proj-title-2": "Projects",
+                "badge-demo": "Demo Available",
+                "proj-desc-1": "Analytical and management control panel with integrated interactive 3D engine (demo version available).",
+                "btn-preview": "Demo Preview",
+                "task-title": "Real-Time Task Manager",
+                "task-desc": "Interactive real-time Kanban application featuring workflow management, dynamic language switching, and data persistence.",
+                "btn-gotit": "Got It",
+                "contact-tag": "Contact",
+                "contact-title-1": "Get in",
+                "contact-title-2": "Touch",
+                "contact-subtitle": "Let's Talk About Your Website",
+                "contact-text-part1": "Do you need a graphic restyling, a new website, or want to collaborate? I work remotely, but if you are in the province of",
+                "contact-text-part2": "we can also meet in person. Feel free to write to me!",
+                "location-prov": "Province of",
+                "location-remote": "Remote",
+                "form-name": "Your Name",
+                "form-email": "Your Email",
+                "form-subject": "Subject",
+                "form-message": "Your Message",
+                "form-submit": "Send Message",
+                "p-name": "John Smith",
+                "p-email": "john@example.com",
+                "p-subject": "Details of your request",
+                "p-message": "Write me the details of your request...",
+                "footer-rights": "All rights reserved.",
+                "roles": ["Web Developer", "Graphic Designer", "ITIS Computer Science Student"]
+            },
+            fr: {
+                "nav-about": "À propos",
+                "nav-exp": "Formation",
+                "nav-proj": "Projets",
+                "nav-contact": "Contact",
+                "hero-badge": "À distance & région de Treviso",
+                "hero-title": "Je crée des interfaces uniques et <span>des expériences numériques modernes</span>",
+                "hero-desc-1": "Salut, c'est",
+                "hero-desc-2": "J'ai 18 ans, j'étudie l'informatique à l'ITIS et je combine ma passion pour le web dev et le design pour donner vie à des sites soignés dans les moindres détails.",
+                "btn-projects": "Explorer les Projets",
+                "btn-contact": "Contactez-moi",
+                "stat-1": "Années de Passion Tech",
+                "stat-2": "Option Informatique",
+                "stat-3": "Dédié aux détails",
+                "about-tag": "Profil",
+                "about-title-1": "À",
+                "about-title-2": "propos",
+                "about-p1": "Je fréquente l'ITIS en informatique et je me définis comme un développeur web et designer graphique axé sur un design épuré et l'interactivité.",
+                "about-p2-part1": "Je travaille principalement à distance, mais je suis disponible pour des collaborations et des réunions en personne pour les personnes et entreprises situées dans les environs de la province de",
+                "about-p3": "Je soigne chaque ligne de code et chaque graphisme pour équilibrer esthétique et solidité technique.",
+                "btn-idea": "Parlons d'une idée",
+                "skills-title-1": "Développement Web & Code",
+                "skills-title-2": "Design & Outils",
+                "tag-graphic": "Graphic Design",
+                "tag-web": "Web Design",
+                "exp-tag": "Parcours",
+                "exp-title-1": "Formation &",
+                "exp-title-2": "Compétences",
+                "timeline-date-1": "En cours",
+                "timeline-h1": "Étudiant en Informatique ITIS",
+                "timeline-h4-1": "Étude approfondie des algorithmes, langages et systèmes",
+                "timeline-p1": "Étude constante des bases informatiques, programmation orientée objet, logique réseau et structures de données avancées.",
+                "timeline-date-2": "Autodidacte & Projets",
+                "timeline-h2": "Web Developer & Graphic Designer",
+                "timeline-h4-2": "Développement d'interfaces et d'applications personnelles",
+                "timeline-p2": "Expérimentation pratique avec HTML, CSS, JavaScript et C#. Étude d'UI via Figma et création de concepts avancés comme Nexus et MindFlow AI.",
+                "proj-tag": "Portfolio",
+                "proj-title-1": "Mes",
+                "proj-title-2": "Projets",
+                "badge-demo": "Démo Disponible",
+                "proj-desc-1": "Panneau de contrôle analytique et de gestion avec moteur 3D interactif intégré (version démo disponible).",
+                "btn-preview": "Aperçu Démo",
+                "task-title": "Gestionnaire de Tâches en Temps Réel",
+                "task-desc": "Application Kanban interactive en temps réel avec gestion des flux, changement de langue dynamique et persistance des données.",
+                "btn-gotit": "J'ai compris",
+                "contact-tag": "Contact",
+                "contact-title-1": "Entrer en",
+                "contact-title-2": "Contact",
+                "contact-subtitle": "Parlons de votre site web",
+                "contact-text-part1": "Besoin d'une refonte graphique, d'un nouveau site web ou d'une collaboration ? Je travaille à distance mais si vous êtes dans la province de",
+                "contact-text-part2": "nous pouvons aussi nous rencontrer. Écrivez-moi !",
+                "location-prov": "Province de",
+                "location-remote": "Distance",
+                "form-name": "Votre Nom",
+                "form-email": "Votre Email",
+                "form-subject": "Objet",
+                "form-message": "Votre Message",
+                "form-submit": "Envoyer le Message",
+                "p-name": "Jean Dupont",
+                "p-email": "jean@example.fr",
+                "p-subject": "Détails de votre demande",
+                "p-message": "Écrivez-moi les détails de votre demande...",
+                "footer-rights": "Tous droits réservés.",
+                "roles": ["Développeur Web", "Designer Graphique", "Étudiant en Informatique ITIS"]
+            },
+            es: {
+                "nav-about": "Sobre mí",
+                "nav-exp": "Formación",
+                "nav-proj": "Proyectos",
+                "nav-contact": "Contacto",
+                "hero-badge": "Remoto & región de Treviso",
+                "hero-title": "Creo interfaces únicas y <span>experiencias digitales modernas</span>",
+                "hero-desc-1": "¡Hola, soy",
+                "hero-desc-2": "Tengo 18 años, estudio informática en el ITIS y combino la pasión por el desarrollo web y el diseño gráfico para dar vida a sitios cuidados al detalle.",
+                "btn-projects": "Explorar Proyectos",
+                "btn-contact": "Contáctame",
+                "stat-1": "Años de Pasión Tech",
+                "stat-2": "Especialidad Informática",
+                "stat-3": "Dedicado a los detalles",
+                "about-tag": "Perfil",
+                "about-title-1": "Sobre",
+                "about-title-2": "Mí",
+                "about-p1": "Estudio en el ITIS informática y me defino como un desarrollador web y diseñador gráfico enfocado en diseño limpio e interactividad.",
+                "about-p2-part1": "Trabajo principalmente de forma remota, pero estoy disponible para colaboraciones en persona para personas y empresas en los alrededores de la provincia de",
+                "about-p3": "Cuido cada línea de código y diseño buscando equilibrar estética y solidez técnica.",
+                "btn-idea": "Hablemos de una idea",
+                "skills-title-1": "Desarrollo Web & Código",
+                "skills-title-2": "Diseño y Herramientas",
+                "tag-graphic": "Graphic Design",
+                "tag-web": "Web Design",
+                "exp-tag": "Trayectoria",
+                "exp-title-1": "Formación y",
+                "exp-title-2": "Habilidades",
+                "timeline-date-1": "En curso",
+                "timeline-h1": "Estudiante de Informática ITIS",
+                "timeline-h4-1": "Estudio de Algoritmos, Lenguajes y Sistemas",
+                "timeline-p1": "Estudio constante de bases informáticas, programación orientada a objetos y estructuras de datos.",
+                "timeline-date-2": "Autodidacta y Proyectos",
+                "timeline-h2": "Web Developer & Graphic Designer",
+                "timeline-h4-2": "Desarrollo de Interfaces y Apps Personales",
+                "timeline-p2": "Experimentación práctica con HTML, CSS, JavaScript y C#. UI con Figma y creación de conceptos como Nexus y MindFlow AI.",
+                "proj-tag": "Portafolio",
+                "proj-title-1": "Mis",
+                "proj-title-2": "Proyectos",
+                "badge-demo": "Demo Disponible",
+                "proj-desc-1": "Panel de control analitico y de gestión con motor 3D interactivo integrado (versión demo disponible).",
+                "btn-preview": "Vista Previa Demo",
+                "task-title": "Gestor de Tareas en Tiempo Real",
+                "task-desc": "Aplicación Kanban interactiva en tiempo real con gestión de flujos, cambio de idioma dinámico y persistencia de datos.",
+                "btn-gotit": "Entendido",
+                "contact-tag": "Contacto",
+                "contact-title-1": "Ponte en",
+                "contact-title-2": "Contacto",
+                "contact-subtitle": "Hablemos de tu sitio web",
+                "contact-text-part1": "¿Necesitas un rediseño, una nueva web o colaborar? Trabajo en remoto pero si estás en la provincia de",
+                "contact-text-part2": "podemos vernos en persona. ¡Escríbeme!",
+                "location-prov": "Provincia de",
+                "location-remote": "Remoto",
+                "form-name": "Tu Nombre",
+                "form-email": "Tu Correo",
+                "form-subject": "Asunto",
+                "form-message": "Tu Mensaje",
+                "form-submit": "Enviar Mensaje",
+                "p-name": "Juan Pérez",
+                "p-email": "juan@example.es",
+                "p-subject": "Detalles de tu solicitud",
+                "p-message": "Escríbeme los detalles de tu solicitud...",
+                "footer-rights": "Todos los derechos reservados.",
+                "roles": ["Desarrollador Web", "Diseñador Gráfico", "Estudiante de Informática ITIS"]
+            },
+            de: {
+                "nav-about": "Über mich",
+                "nav-exp": "Ausbildung",
+                "nav-proj": "Projekte",
+                "nav-contact": "Kontakt",
+                "hero-badge": "Remote & Region Treviso",
+                "hero-title": "Ich erstelle einzigartige Interfaces und <span>moderne digitale Erlebnisse</span>",
+                "hero-desc-1": "Hi, ich bin",
+                "hero-desc-2": "Ich bin 18, studiere Informatik an der ITIS und verbinde die Leidenschaft für Webentwicklung und Design, um detailverliebte Websites zum Leben zu erwecken.",
+                "btn-projects": "Projekte Entdecken",
+                "btn-contact": "Kontaktiere mich",
+                "stat-1": "Jahre Tech-Leidenschaft",
+                "stat-2": "Informatik-Schwerpunkt",
+                "stat-3": "Detailverliebt",
+                "about-tag": "Profil",
+                "about-title-1": "Über",
+                "about-title-2": "mich",
+                "about-p1": "Ich besuche die ITIS für Informatik und definiere mich als Web-Entwickler und Grafikdesigner mit Fokus auf sauberes Design und Interaktivität.",
+                "about-p2-part1": "Ich arbeite hauptsächlich remote, stehe aber für Kollaborationen und persönliche Treffen für Personen und Unternehmen in der Umgebung der Provinz",
+                "about-p3": "Ich pflege jede Zeile Code und jedes Design mit dem Ziel, Ästhetik und Technik zu verbinden.",
+                "btn-idea": "Lass uns sprechen",
+                "skills-title-1": "Webentwicklung & Code",
+                "skills-title-2": "Design & Werkzeuge",
+                "tag-graphic": "Graphic Design",
+                "tag-web": "Web Design",
+                "exp-tag": "Werdegang",
+                "exp-title-1": "Bildung &",
+                "exp-title-2": "Kompetenzen",
+                "timeline-date-1": "Laufend",
+                "timeline-h1": "ITIS Informatik-Student",
+                "timeline-h4-1": "Vertiefung von Algorithmen und Systemen",
+                "timeline-p1": "Konstantes Studium von Informatikgrundlagen, objektorientierter Programmierung und Netzwerklogik.",
+                "timeline-date-2": "Autodidakt & Projekte",
+                "timeline-h2": "Web Developer & Graphic Designer",
+                "timeline-h4-2": "Entwicklung von Interfaces und Apps",
+                "timeline-p2": "Praktische Experimente mit HTML, CSS, JS und C#. UI-Studien mit Figma und Erstellung fortschrittlicher Konzepte.",
+                "proj-tag": "Portfolio",
+                "proj-title-1": "Meine",
+                "proj-title-2": "Projekte",
+                "badge-demo": "Demo Verfügbar",
+                "proj-desc-1": "Analytisches Steuerungs-Dashboard mit integriertem interaktiven 3D-Motor.",
+                "btn-preview": "Demo-Vorschau",
+                "task-title": "Echtzeit-Task-Manager",
+                "task-desc": "Interaktive Echtzeit-Kanban-Anwendung mit Workflow-Management, dynamischem Sprachwechsel und Datenspeicherung.",
+                "btn-gotit": "Verstanden",
+                "contact-tag": "Kontakt",
+                "contact-title-1": "In",
+                "contact-title-2": "Kontakt treten",
+                "contact-subtitle": "Lass uns über deine Website reden",
+                "contact-text-part1": "Brauchst du ein neues Webdesign oder eine Kollaboration? Ich arbeite remote, aber wenn du in der Provinz",
+                "contact-text-part2": "bist, können wir uns auch treffen. Schreib mir!",
+                "location-prov": "Provinz",
+                "location-remote": "Remote",
+                "form-name": "Dein Name",
+                "form-email": "Deine E-Mail",
+                "form-subject": "Betreff",
+                "form-message": "Deine Nachricht",
+                "form-submit": "Nachricht Senden",
+                "p-name": "Max Mustermann",
+                "p-email": "max@example.de",
+                "p-subject": "Details Ihrer Anfrage",
+                "p-message": "Schreiben Sie mir die Details Ihrer Anfrage...",
+                "footer-rights": "Alle Rechte vorbehalten.",
+                "roles": ["Web-Entwickler", "Grafikdesigner", "ITIS Informatik-Student"]
+            },
+            zh: {
+                "nav-about": "关于我",
+                "nav-exp": "教育背景",
+                "nav-proj": "项目",
+                "nav-contact": "联系方式",
+                "hero-badge": "远程 & Treviso地区",
+                "hero-title": "我创造独特的界面和 <span>现代数字体验</span>",
+                "hero-desc-1": "你好，我是",
+                "hero-desc-2": "我18岁，在ITIS学习计算机，并将对网页开发和图形设计的热爱结合起来，以打造注重细节的精致网站。",
+                "btn-projects": "浏览项目",
+                "btn-contact": "联系我",
+                "stat-1": "年技术热情",
+                "stat-2": "计算机专业",
+                "stat-3": "专注于细节",
+                "about-tag": "个人简介",
+                "about-title-1": "关于",
+                "about-title-2": "我",
+                "about-p1": "我就读于ITIS计算机专业，自认为是一名网页开发者和平面设计师，专注于简洁设计和互动性。",
+                "about-p2-part1": "我主要远程工作，但也接受位于以下省份周边个人和公司的合作及线下见面：",
+                "about-p3": "我精心处理每一行代码和图形设计，旨在平衡视觉美感与技术稳定性。",
+                "btn-idea": "聊聊您的想法",
+                "skills-title-1": "网页开发与代码",
+                "skills-title-2": "设计与工具",
+                "tag-graphic": "Graphic Design",
+                "tag-web": "Web Design",
+                "exp-tag": "成长经历",
+                "exp-title-1": "教育与",
+                "exp-title-2": "技能",
+                "timeline-date-1": "进行中",
+                "timeline-h1": "ITIS计算机专业学生",
+                "timeline-h4-1": "深入研究算法、语言与系统",
+                "timeline-p1": "持续学习计算机基础、面向对象编程、网络逻辑和高级数据结构。",
+                "timeline-date-2": "自学与项目",
+                "timeline-h2": "Web Developer & Graphic Designer",
+                "timeline-h4-2": "界面与个人应用开发",
+                "timeline-p2": "HTML、CSS、JavaScript和C#的实际演练。通过Figma进行用户界面研究并创建Nexus和MindFlow AI等高级概念。",
+                "proj-tag": "作品集",
+                "proj-title-1": "我的",
+                "proj-title-2": "项目",
+                "badge-demo": "可用演示",
+                "proj-desc-1": "集成交互式3D引擎的分析与管理控制面板（提供演示版）。",
+                "btn-preview": "演示预览",
+                "task-title": "实时任务管理器",
+                "task-desc": "带有工作流管理、动态语言切换和数据持久化的实时交互式看板应用程序。",
+                "btn-gotit": "知道了",
+                "contact-tag": "联系",
+                "contact-title-1": "取得",
+                "contact-title-2": "联系",
+                "contact-subtitle": "谈谈您的网站",
+                "contact-text-part1": "您需要图形改版、新网站还是寻求合作？我支持远程工作，如果您在",
+                "contact-text-part2": "省，我们也可以线下见面。请写信给我！",
+                "location-prov": "",
+                "location-remote": "远程",
+                "form-name": "您的姓名",
+                "form-email": "您的电子邮箱",
+                "form-subject": "主题",
+                "form-message": "您的留言",
+                "form-submit": "发送消息",
+                "p-name": "张三",
+                "p-email": "zhangsan@example.cn",
+                "p-subject": "您的请求详情",
+                "p-message": "请写下您的请求详情...",
+                "footer-rights": "版权所有。",
+                "roles": ["网页开发者", "平面设计师", "ITIS计算机学生"]
+            },
+            ja: {
+                "nav-about": "私について",
+                "nav-exp": "学歴・経歴",
+                "nav-proj": "プロジェクト",
+                "nav-contact": "お問い合わせ",
+                "hero-badge": "リモート & Treviso周辺",
+                "hero-title": "ユニークなインターフェースと<span>モダンなデジタル体験</span>を創造します",
+                "hero-desc-1": "こんにちは、私は",
+                "hero-desc-2": "18歳でITISでコンピュータサイエンスを学んでおり、Web開発とグラフィックデザインへの情熱を融合させて、細部までこだわったサイトに命を吹き込みます。",
+                "btn-projects": "プロジェクトを見る",
+                "btn-contact": "お問い合わせ",
+                "stat-1": "年の技術への情熱",
+                "stat-2": "情報科学専攻",
+                "stat-3": "細部へのこだわり",
+                "about-tag": "プロフィール",
+                "about-title-1": "私",
+                "about-title-2": "について",
+                "about-p1": "ITISの情報科学専攻に通っており、自身をWeb開発者およびグラフィックデザイナーとして、クリーンなデザインとインタラクティビティを重視しています。",
+                "about-p2-part1": "主にリモートで活動していますが、次の周辺地域の方や企業のコラボレーションや対面ミーティングも可能です：",
+                "about-p3": "視覚的美しさと技術的堅牢性のバランスを取ることを目指し、コードとデザインの細部にまでこだわっています。",
+                "btn-idea": "アイデアについて話そう",
+                "skills-title-1": "Web開発 & コード",
+                "skills-title-2": "Design & ツール",
+                "tag-graphic": "Graphic Design",
+                "tag-web": "Web Design",
+                "exp-tag": "経歴",
+                "exp-title-1": "学歴 &",
+                "exp-title-2": "スキル",
+                "timeline-date-1": "進行中",
+                "timeline-h1": "ITIS情報科学科の学生",
+                "timeline-h4-1": "アルゴリズム、言語、システムの高度な学習",
+                "timeline-p1": "コンピュータ基礎、オブジェクト指向プログラミング、ネットワーク論理の継続的な学習。",
+                "timeline-date-2": "独学 & プロジェクト",
+                "timeline-h2": "Web Developer & Graphic Designer",
+                "timeline-h4-2": "インターフェースと個人向けアプリの開発",
+                "timeline-p2": "HTML、CSS、JS、C#の実践。Figmaを用いたUI研究、NexusやMindFlow AIなどの高度なコンセプト作成。",
+                "proj-tag": "ポートフォリオ",
+                "proj-title-1": "私のかっこいい",
+                "proj-title-2": "プロジェクト",
+                "badge-demo": "デモ利用可能",
+                "proj-desc-1": "インタラクティブ3Dエンジンを統合した分析・管理コントロールパネル（デモ版あり）。",
+                "btn-preview": "デモプレビュー",
+                "task-title": "リアルタイム・タスクマネージャー",
+                "task-desc": "ワークフロー管理、動的な言語切り替え、データ永続化を備えたリアルタイム・インタラクティブKanbanアプリ。",
+                "btn-gotit": "了解しました",
+                "contact-tag": "お問い合わせ",
+                "contact-title-1": "お気軽に",
+                "contact-title-2": "ご連絡ください",
+                "contact-subtitle": "あなたのウェブサイトについて話しましょう",
+                "contact-text-part1": "グラフィックの刷新や新規Webサイトが必要ですか？リモートで作業しますが、",
+                "contact-text-part2": "にいれば対面も可能です！お気軽にどうぞ。",
+                "location-prov": "",
+                "location-remote": "リモート",
+                "form-name": "お名前",
+                "form-email": "メールアドレス",
+                "form-subject": "件名",
+                "form-message": "メッセージ",
+                "form-submit": "メッセージを送信",
+                "p-name": "山田 太郎",
+                "p-email": "yamada@example.jp",
+                "p-subject": "ご要望の詳細",
+                "p-message": "ご要望の詳細をお書きください...",
+                "footer-rights": "無断複写・転載を禁じます。",
+                "roles": ["Web開発者", "グラフィックデザイナー", "ITIS情報科学科の学生"]
+            }
+        };
+
+        const originalTexts = new Map();
+        document.querySelectorAll('[data-translate]').forEach(el => {
+            originalTexts.set(el, el.innerHTML);
+        });
+
+        const originalPlaceholders = new Map();
+        document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
+            originalPlaceholders.set(el, el.getAttribute('placeholder'));
+        });
+
+        function translatePage(lang) {
+            if (flagMap[lang]) {
+                activeFlagIcon.style.backgroundImage = `url('${flagMap[lang]}')`;
+            }
+
+            if (lang === 'it') {
+                document.querySelectorAll('[data-translate]').forEach(el => {
+                    el.innerHTML = originalTexts.get(el);
+                });
+                document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
+                    el.setAttribute('placeholder', originalPlaceholders.get(el));
+                });
+                words = ["Web Developer", "Graphic Designer", "Studente ITIS Informatico"];
+                resetTyping();
+                return;
+            }
+
+            const dict = translations[lang];
+            if (!dict) return;
+
+            document.querySelectorAll('[data-translate]').forEach(el => {
+                const key = el.getAttribute('data-translate');
+                if (dict[key] !== undefined) {
+                    el.innerHTML = dict[key];
+                }
+            });
+
+            const nameInput = document.getElementById('name');
+            const emailInput = document.getElementById('email');
+            const subjectInput = document.getElementById('subject');
+            const messageInput = document.getElementById('message');
+
+            if (nameInput && dict["p-name"]) nameInput.setAttribute('placeholder', dict["p-name"]);
+            if (emailInput && dict["p-email"]) emailInput.setAttribute('placeholder', dict["p-email"]);
+            if (subjectInput && dict["p-subject"]) subjectInput.setAttribute('placeholder', dict["p-subject"]);
+            if (messageInput && dict["p-message"]) messageInput.setAttribute('placeholder', dict["p-message"]);
+
+            if (dict.roles) {
+                words = dict.roles;
+                resetTyping();
+            }
+        }
+
+        // AGGIORNATO: Controllo all'avvio della pagina per sincronizzare lingua, bandierina e testo del toggle
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('sinthea_lang') || 'it';
+            
+            // Trova l'elemento option corrispondente nel menu dropdown per estrarre il nome corretto tradotto/visualizzato
+            const targetOption = document.querySelector(`.lang-option[data-value="${savedLang}"]`);
+            if (targetOption) {
+                activeLangText.textContent = targetOption.textContent.trim();
+            }
+            
+            if (savedLang !== 'it' && translations[savedLang]) {
+                translatePage(savedLang);
+            }
+        });
+
+        // Selezione della lingua dal custom dropdown
+        document.querySelectorAll('.lang-option').forEach(option => {
+            option.addEventListener('click', () => {
+                const lang = option.getAttribute('data-value');
+                const text = option.textContent.trim();
+                
+                localStorage.setItem('sinthea_lang', lang);
+                
+                activeFlagIcon.style.backgroundImage = `url('${flagMap[lang]}')`;
+                activeLangText.textContent = text;
+                
+                langSwitcher.classList.remove('active');
+                
+                translatePage(lang);
+            });
+        });
+
+        let words = ["Web Developer", "Graphic Designer", "Studente ITIS Informatico"];
+        let i = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        let typingTimeout;
+
+        function resetTyping() {
+            clearTimeout(typingTimeout);
+            charIndex = 0;
+            isDeleting = false;
+            const typingEl = document.getElementById('typing-text');
+            if(typingEl) typingEl.innerHTML = "";
+            typeEffect();
+        }
+
+        function typeEffect() {
+            const currentWord = words[i];
+            const typingElement = document.getElementById('typing-text');
+            if (!typingElement) return;
+
+            if (isDeleting) {
+                typingElement.innerHTML = currentWord.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                typingElement.innerHTML = currentWord.substring(0, charIndex + 1);
+                charIndex++;
+            }
+
+            let typeSpeed = isDeleting ? 50 : 100;
+
+            if (!isDeleting && charIndex === currentWord.length) {
+                typeSpeed = 2000;
+                isDeleting = true;
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                i = (i + 1) % words.length;
+                typeSpeed = 500;
+            }
+
+            typingTimeout = setTimeout(typeEffect, typeSpeed);
+        }
+
+        typeEffect();
+
+        function openModal(title, desc) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerText = desc;
+            document.getElementById('demoModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('demoModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            let modal = document.getElementById('demoModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
