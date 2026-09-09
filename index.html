@@ -1681,9 +1681,13 @@
                 document.querySelectorAll('[data-translate]').forEach(el => {
                     el.innerHTML = originalTexts.get(el);
                 });
-                document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
-                    el.setAttribute('placeholder', originalPlaceholders.get(el));
-                });
+    
+                 // AGGIUNGI QUESTE RIGHE per ripristinare i placeholder in italiano:
+                document.getElementById('name').setAttribute('placeholder', 'Mario Rossi');
+                document.getElementById('email').setAttribute('placeholder', 'mario@example.com');
+                document.getElementById('subject').setAttribute('placeholder', 'Dettagli della tua richiesta');
+                document.getElementById('message').setAttribute('placeholder', 'Scrivimi i dettagli della tua richiesta...');
+
                 words = ["Web Developer", "Graphic Designer", "Studente ITIS Informatico"];
                 resetTyping();
                 return;
